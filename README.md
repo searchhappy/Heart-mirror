@@ -6,10 +6,10 @@
 
 ## 项目亮点
 
-- 多模态输入：支持文本、摄像头表情和语音输入。
+- 多模态输入：支持文本、摄像头表情和语音输入，语音经 Whisper 转写后参与对话上下文。
 - 专业知识增强：基于心理学知识库构建 RAG 检索，提升回复的专业性与可解释性。
 - 实时陪伴对话：支持流式输出，前端以打字机效果展示回复。
-- 情绪数据沉淀：记录主要情绪、压力值和情绪分布，用图表展示近 7/30/90 天趋势。
+- 情绪数据沉淀：记录主要情绪、基于表情识别结果计算的压力值和情绪分布，用图表展示近 7/30/90 天趋势。
 - 隐私与隔离：支持注册登录，聊天上下文和情绪数据按用户隔离存储。
 
 ## 典型场景
@@ -23,7 +23,7 @@
 
 项目采用前后端分离的轻量架构：
 
-- 感知层：OpenCV + DeepFace 进行多帧表情识别；Whisper 进行语音转写；浏览器提供文本和多媒体输入。
+- 感知层：OpenCV + DeepFace 进行多帧表情识别；Whisper 进行中文语音转写；浏览器提供文本和多媒体输入。
 - 理解层：LangChain + ChromaDB + HuggingFace Embeddings 构建 RAG 知识库。
 - 响应层：讯飞星火或本地 Ollama 模型生成心理陪伴回复，支持流式输出。
 - 记录层：SQLite 持久化情绪记录，ECharts 展示雷达图和趋势图。
@@ -32,8 +32,8 @@
 
 - 用户注册、登录、登录态校验。
 - 文本对话与流式对话。
-- 摄像头连拍 5 帧后做表情识别，并生成压力值。
-- 浏览器录音上传到后端后进行 Whisper 中文转写。
+- 摄像头连拍 5 帧后做表情识别，并基于情绪结果计算压力值。
+- 浏览器录音上传到后端后进行 Whisper 中文转写，转写文本可直接进入对话流程。
 - 情绪记录保存、最近记录查询、情绪雷达统计、压力趋势统计。
 - 心理知识库检索增强回复。
 
@@ -118,25 +118,49 @@ XF_API_KEY=your_xf_api_key
 XF_API_SECRET=your_xf_api_secret
 XF_URL=wss://spark-api.xf-yun.com/v4.0/chat
 XF_DOMAIN=4.0Ultra
+MODEL_PROVIDER=xf
 ```
 
 如果你想改用本地 Ollama 模型：
 
 - 安装并启动 Ollama
 - 拉取模型，例如 `ollama pull qwen2.5:7b`
-- 在 [main.py](/E:/Code/heart-mirror/main.py) 中把 `from core.llm_xf import chat, chat_stream` 改为 `from core.llm import chat, chat_stream`
+- 将 `MODEL_PROVIDER` 设置为 `ollama`
+
+系统同时支持讯飞星火与本地 Ollama 两种方案，并会按配置优先级选择可用模型服务。
 
 ### 4. 启动服务
+
+方式一：一体化启动（推荐）
 
 ```powershell
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+此方式由 FastAPI 直接托管前端静态页面和后端接口，浏览器访问 `http://localhost:8000` 即可。
+
+方式二：前后端分开启动
+
+先启动后端：
+
+```powershell
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+再单独启动前端静态服务：
+
+```powershell
+npm start
+```
+
+`npm start` 会执行 `node server.js`，默认在 `http://127.0.0.1:3000` 提供 `static/` 目录下的页面；页面仍会请求运行在 `http://localhost:8000` 的后端接口。
+
 ### 5. 访问系统
 
 浏览器打开：
 
-- [http://localhost:8000](http://localhost:8000)
+- 一体化方式：[http://localhost:8000](http://localhost:8000)
+- 分离方式前端页面：[http://127.0.0.1:3000](http://127.0.0.1:3000)
 
 ## 使用说明
 
@@ -150,13 +174,14 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 - 点击“拍照分析”并授权摄像头。
 - 系统自动连拍 5 帧，输出主要情绪和压力值。
+- 压力值当前依据表情识别结果按权重计算。
 - 分析结果可自动写入情绪记录，并用于触发后续对话。
 
 ### 语音输入
 
 - 点击“语音输入”并授权麦克风。
 - 浏览器录音后会上传到后端，由 Whisper 转写为中文文本。
-- 识别结果会自动填入输入框。
+- 识别结果会自动填入输入框，当前不做语调或声学情感分析。
 
 ### 情绪可视化
 
@@ -236,3 +261,6 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 - [心语镜像_参赛文档.docx](/E:/Code/heart-mirror/心语镜像_参赛文档.docx)
 - 当前仓库实现代码
+
+
+
