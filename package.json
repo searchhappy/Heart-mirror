@@ -1,0 +1,9 @@
+{
+  "name": "heart-mirror-frontend",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Local Node.js frontend server for Heart Mirror",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

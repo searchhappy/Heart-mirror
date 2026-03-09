@@ -1,0 +1,29 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# virtualenv
+venv/
+.venv/
+env/
+.env/
+
+# local secrets
+.env
+.env.*
+!.env.example
+
+# databases / vector stores
+database/*.db
+database/chroma/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# logs
+*.log
