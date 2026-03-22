@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心语镜像 · 首页</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;600&display=swap');
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(99,179,237,0.15);
+      --accent: #4ea0ff;
+      --accent2: #2d6cdf;
+      --accent3: #68d391;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --glow: rgba(78,160,255,0.35);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(circle at 20% 10%, rgba(78,160,255,0.08), transparent 45%),
+                  radial-gradient(circle at 80% 0%, rgba(45,108,223,0.08), transparent 45%),
+                  #0b0f1a;
+      color: var(--text);
+      font-family: 'Noto Sans SC', sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      background: rgba(12,16,26,0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid; place-items: center;
+      box-shadow: 0 12px 30px var(--glow);
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .brand-text .title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .brand-text .subtitle {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+    .nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .pill {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(26,34,53,0.7);
+      color: var(--text);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      box-shadow: 0 10px 30px var(--glow);
+    }
+
+    .hero {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 80px 24px 40px;
+    }
+    .hero-icon {
+      width: 84px; height: 84px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid; place-items: center;
+      color: #fff;
+      font-size: 36px;
+      margin-bottom: 18px;
+      box-shadow: 0 18px 40px var(--glow);
+    }
+    .hero h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 620px;
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+    .hero-actions {
+      margin-top: 26px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(26,34,53,0.6);
+      color: var(--text);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn.primary {
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 12px 30px var(--glow);
+    }
+    .btn:hover { transform: translateY(-1px); }
+
+    .section {
+      padding: 30px 24px 80px;
+      text-align: center;
+    }
+    .section h3 {
+      font-size: 1.2rem;
+      margin-bottom: 6px;
+    }
+    .section p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .features {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .feature {
+      background: rgba(17,24,39,0.7);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: left;
+    }
+    .feature .icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(78,160,255,0.18);
+      display: grid; place-items: center;
+      color: var(--accent);
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .feature h4 { margin-bottom: 6px; font-size: 0.95rem; }
+    .feature p { color: var(--text-muted); font-size: 0.82rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">❤</div>
+      <div class="brand-text">
+        <div class="title">心语镜像</div>
+        <div class="subtitle">AI 心理健康陪伴系统</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="pill" href="./home.html">首页</a>
+      <a class="pill" href="./profile.html">个人信息</a>
+      <a class="pill primary" href="./index.html">开始聊天</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-icon">❤</div>
+    <h2 id="heroTitle">欢迎回来，管理员！</h2>
+    <p>心语镜像是你的 AI 心理健康陪伴系统，用科技的力量守护你的心理健康。</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="./index.html">开始聊天</a>
+      <a class="btn" href="./profile.html">了解更多</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h3>系统功能</h3>
+    <p>心语镜像集成多种先进技术，为你提供全方位的心理健康服务</p>
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🧠</div>
+        <h4>AI 情绪陪伴</h4>
+        <p>多轮对话与情绪理解，构建长期的心理支持与陪伴体验。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📊</div>
+        <h4>情绪趋势洞察</h4>
+        <p>基于历史记录的趋势分析，帮助你观察心理状态变化。</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🎤</div>
+        <h4>语音与表情识别</h4>
+        <p>语音转写与表情识别协同，提升情绪识别的准确度。</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="./config.js"></script>
+  <script>
+    const API = window.__API_BASE__ || 'http://localhost:8000';
+    const heroTitle = document.getElementById('heroTitle');
+
+    function typeText(text) {
+      if (!heroTitle) return;
+      heroTitle.textContent = '';
+      let i = 0;
+      const timer = setInterval(() => {
+        heroTitle.textContent += text[i];
+        i += 1;
+        if (i >= text.length) clearInterval(timer);
+      }, 70);
+    }
+
+    async function getUsername() {
+      const token = localStorage.getItem('token');
+      if (!token) return null;
+      try {
+        const r = await fetch(`${API}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!r.ok) return null;
+        const data = await r.json();
+        return data.username || null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function initHero() {
+      const username = await getUsername();
+      const name = username || '朋友';
+      const text = `欢迎回来，${name}！`;
+      typeText(text);
+    }
+
+    initHero();
+  </script>
+</body>
+</html>

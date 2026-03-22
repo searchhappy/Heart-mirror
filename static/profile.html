@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人信息 · 心语镜像</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+  <script src="./config.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;500&display=swap');
+
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2235;
+      --border: rgba(99,179,237,0.15);
+      --accent: #63b3ed;
+      --accent2: #9f7aea;
+      --accent3: #68d391;
+      --text: #e2e8f0;
+      --text-muted: #718096;
+      --danger: #fc8181;
+      --glow: rgba(99,179,237,0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(circle at 20% 10%, rgba(78,160,255,0.08), transparent 45%),
+                  radial-gradient(circle at 80% 0%, rgba(45,108,223,0.08), transparent 45%),
+                  #0b0f1a;
+      color: var(--text);
+      font-family: 'Noto Sans SC', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,179,237,0.06) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      pointer-events: none;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(159,122,234,0.06) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      pointer-events: none;
+      animation: drift 15s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes drift {
+      from { transform: translate(0,0); }
+      to { transform: translate(60px, 40px); }
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      background: rgba(12,16,26,0.8);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid; place-items: center;
+      box-shadow: 0 12px 30px var(--glow);
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .brand-text .title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .brand-text .subtitle {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      margin-top: 2px;
+    }
+    .nav {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .pill {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(26,34,53,0.7);
+      color: var(--text);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      box-shadow: 0 10px 30px var(--glow);
+    }
+    .pill.danger {
+      background: rgba(252,129,129,0.15);
+      border: 1px solid rgba(252,129,129,0.35);
+      color: #fc8181;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .refresh-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .update-tag {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+    .range-group {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .range-btn {
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: 'Noto Sans SC', sans-serif;
+      transition: all 0.2s;
+    }
+    .range-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .range-btn.active { background: rgba(99,179,237,0.15); border-color: var(--accent); color: var(--accent); }
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+    }
+    .stat-label { color: var(--text-muted); font-size: 0.78rem; }
+    .stat-value { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
+
+    .recent-list {
+      display: grid;
+      gap: 8px;
+    }
+    .recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(99,179,237,0.06);
+      border: 1px solid rgba(99,179,237,0.15);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+    .recent-left { display: flex; align-items: center; gap: 8px; }
+    .recent-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent3);
+      box-shadow: 0 0 6px rgba(104,211,145,0.5);
+    }
+    .recent-empty { color: var(--text-muted); font-size: 0.8rem; }
+
+    #trendChart { width: 100%; height: 260px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-logo">❤</div>
+      <div class="brand-text">
+        <div class="title">心语镜像</div>
+        <div class="subtitle" id="userTag">· 未登录</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a class="pill" href="./home.html">首页</a>
+      <a class="pill" href="./profile.html">个人信息</a>
+      <a class="pill primary" href="./index.html">开始聊天</a>
+      <button class="pill danger" onclick="logout()">退出登录</button>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <div class="section-title">👤 个人信息</div>
+        <div style="display:flex; align-items:center; gap:10px">
+          <span class="update-tag" id="lastUpdated">未更新</span>
+          <button class="refresh-btn" onclick="refreshAll()">⟳ 刷新</button>
+        </div>
+      </div>
+      <div class="profile-grid">
+        <div class="stat-item">
+          <div class="stat-label">用户</div>
+          <div class="stat-value" id="profileUser">未登录</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">近7天记录</div>
+          <div class="stat-value" id="profileCount">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">平均压力</div>
+          <div class="stat-value" id="profileAvgStress">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">主导情绪</div>
+          <div class="stat-value" id="profileDominant">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="section-title">📈 压力趋势</div>
+        <div class="range-group">
+          <button class="range-btn active" onclick="switchRange(7, this)">近7天</button>
+          <button class="range-btn" onclick="switchRange(30, this)">近30天</button>
+          <button class="range-btn" onclick="switchRange(90, this)">近3月</button>
+        </div>
+      </div>
+      <div id="trendChart"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🗂️ 最近记录</div>
+      <div class="recent-list" id="recentList">
+        <div class="recent-empty">暂无记录</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = window.__API_BASE__ || 'http://localhost:8000';
+    let currentUser = null;
+    let authToken = localStorage.getItem('token');
+    let lastTrend = null;
+    let lastStats = null;
+    let currentRangeDays = 7;
+
+    function authHeaders() {
+      return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+    }
+
+    async function apiFetch(url, options = {}) {
+      const headers = {
+        ...(options.headers || {}),
+        ...authHeaders()
+      };
+      const response = await fetch(url, { ...options, headers, cache: 'no-store' });
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        authToken = null;
+        updateProfileUser();
+      }
+      return response;
+    }
+
+    function updateProfileUser() {
+      const name = currentUser ? currentUser : '未登录';
+      const userEl = document.getElementById('profileUser');
+      const tagEl = document.getElementById('userTag');
+      if (userEl) userEl.textContent = name;
+      if (tagEl) tagEl.textContent = `· ${name}`;
+    }
+
+    async function checkAuth() {
+      if (!authToken) {
+        updateProfileUser();
+        return;
+      }
+      try {
+        const r = await apiFetch(`${API}/auth/me`);
+        if (r.ok) {
+          const data = await r.json();
+          currentUser = data.username;
+        } else {
+          localStorage.removeItem('token');
+          authToken = null;
+        }
+      } catch(e) {
+        authToken = null;
+      }
+      updateProfileUser();
+    }
+
+    async function loadStats(days = 7) {
+      currentRangeDays = days;
+      try {
+        const [statsRes, trendRes] = await Promise.all([
+          apiFetch(`${API}/emotions/stats?days=${days}`),
+          apiFetch(`${API}/emotions/trend?days=${days}`)
+        ]);
+        if (!statsRes.ok || !trendRes.ok) return;
+        lastStats = await statsRes.json();
+        lastTrend = await trendRes.json();
+        renderTrend();
+        updateProfileFromStats(days);
+      } catch(e) {
+        console.log('统计加载失败');
+      }
+    }
+
+    function updateProfileFromStats(days) {
+      if (!lastStats || !lastTrend) return;
+      const total = lastTrend.reduce((sum, r) => sum + (r.count || 0), 0);
+      const avg = total
+        ? Math.round(lastTrend.reduce((sum, r) => sum + (r.avg_stress || 0) * (r.count || 0), 0) / total)
+        : 0;
+
+      const keys = Object.keys(lastStats);
+      let dominant = '—';
+      if (keys.length) {
+        dominant = keys.sort((a, b) => (lastStats[b] || 0) - (lastStats[a] || 0))[0] || '—';
+      }
+
+      document.getElementById('profileCount').textContent = `${total} 条`;
+      document.getElementById('profileAvgStress').textContent = total ? `${avg}/100` : '—';
+      document.getElementById('profileDominant').textContent = dominant;
+      loadRecentEmotions(days);
+    }
+
+    async function loadRecentEmotions(days = 7) {
+      const listEl = document.getElementById('recentList');
+      listEl.innerHTML = '<div class="recent-empty">加载中...</div>';
+      try {
+        const res = await apiFetch(`${API}/emotions/recent?days=${days}`);
+        if (!res.ok) {
+          listEl.innerHTML = '<div class="recent-empty">请先登录</div>';
+          return;
+        }
+        const items = await res.json();
+        if (!items || !items.length) {
+          listEl.innerHTML = '<div class="recent-empty">暂无记录</div>';
+          return;
+        }
+        listEl.innerHTML = items.slice(0, 10).map(r => {
+          const day = (r.timestamp || r.created_at || r.createdAt || '').toString().slice(5, 16).replace('T', ' ');
+          const emotion = r.dominant_emotion || r.dominant_emotion_cn || '—';
+          const stress = r.stress_score != null ? `${r.stress_score}/100` : '—';
+          return `
+            <div class="recent-item">
+              <div class="recent-left">
+                <div class="recent-dot"></div>
+                <span>${emotion}</span>
+              </div>
+              <div>${day} · ${stress}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        listEl.innerHTML = '<div class="recent-empty">加载失败</div>';
+      }
+    }
+
+    function renderTrend() {
+      const chart = echarts.init(document.getElementById('trendChart'), null, { renderer: 'canvas' });
+      const dates = (lastTrend || []).map(r => r.day.slice(5));
+      const scores = (lastTrend || []).map(r => Math.round(r.avg_stress || 0));
+      const counts = (lastTrend || []).map(r => r.count || 0);
+      chart.setOption({
+        backgroundColor: 'transparent',
+        grid: { left: 30, right: 10, top: 10, bottom: 30 },
+        xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#2d3748' } }, axisLabel: { color: '#718096', fontSize: 10 } },
+        yAxis: { type: 'value', min: 0, max: 100, axisLine: { lineStyle: { color: '#2d3748' } }, splitLine: { lineStyle: { color: 'rgba(99,179,237,0.08)' } }, axisLabel: { color: '#718096', fontSize: 10 } },
+        tooltip: {
+          trigger: 'axis',
+          backgroundColor: 'rgba(17,24,39,0.9)',
+          borderColor: 'rgba(99,179,237,0.2)',
+          textStyle: { color: '#e2e8f0', fontSize: 12 },
+          formatter: (params) => {
+            const p = params[0];
+            return `${p.name}<br/>压力均值：${p.value}<br/>记录次数：${counts[p.dataIndex]}`;
+          }
+        },
+        series: [{
+          type: 'line',
+          data: scores,
+          smooth: true,
+          lineStyle: { color: '#9f7aea', width: 2 },
+          itemStyle: { color: '#9f7aea' },
+          areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [{ offset: 0, color: 'rgba(159,122,234,0.3)' }, { offset: 1, color: 'rgba(159,122,234,0.02)' }]
+          }}
+        }]
+      });
+    }
+
+    function setLastUpdated() {
+      const el = document.getElementById('lastUpdated');
+      if (!el) return;
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      el.textContent = `更新于 ${hh}:${mm}:${ss}`;
+    }
+
+    async function refreshAll() {
+      await checkAuth();
+      await loadStats(currentRangeDays);
+      setLastUpdated();
+    }
+
+    async function init() {
+      await refreshAll();
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          refreshAll();
+        }
+      }, 15000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          refreshAll();
+        }
+      });
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      authToken = null;
+      currentUser = null;
+      updateProfileUser();
+      window.location.href = './home.html';
+    }
+
+    function switchRange(days, btn) {
+      document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      loadStats(days);
+      setLastUpdated();
+    }
+
+    init();
+  </script>
+</body>
+</html>
